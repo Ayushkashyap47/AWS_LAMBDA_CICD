@@ -14,8 +14,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: List available Python versions
-      run: apt-cache search python3 | grep "^python3.[0-9]"
 
     - name: Install dependencies
       run: |
@@ -103,7 +101,7 @@ jobs:
               exit 1
             else
               echo "Update in progress, waiting..."
-              sleep 5
+              sleep 30
             fi
           done
 
