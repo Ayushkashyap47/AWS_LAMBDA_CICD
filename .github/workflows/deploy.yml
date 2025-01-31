@@ -20,9 +20,18 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt upgrade
-        sudo apt  install -y python3.10 python3.10-venv python3-pip jq zip
-        pip3 install boto3
+        sudo apt upgrade -y
+        # Check if python3.10 is available
+        if apt-cache search python3.10 | grep -q python3.10; then
+          sudo apt install -y python3.10 python3.10-venv python3-pip jq zip
+        else
+          # Add deadsnakes PPA if python3.10 is not found
+          sudo add-apt-repository ppa:deadsnakes/ppa -y
+          sudo apt update
+          sudo apt install -y python3.10 python3.10-venv python3-pip jq zip
+        fi
+        python3.10 -m pip install --upgrade pip
+        python3.10 -m pip install boto3
 
     - name: Set environment variables
       id: set-env-vars
@@ -69,7 +78,7 @@ jobs:
           aws lambda create-function \
             --function-name $FUNCTION_NAME \
             --runtime python3.10 \
-            --role arn:aws:iam::851725469799:role/service-role/test_function-role-k06sk5ka \
+            --role arn:aws:iam::746669205574:role/service-role/test_function-role-k06sk5ka \
             --handler app.lambda_handler \
             --timeout 300 \
             --zip-file fileb://lambda.zip \
